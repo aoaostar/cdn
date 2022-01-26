@@ -21,7 +21,7 @@
     * ![img_2.png](images/img_2.png)
   * 刷新页面
   * 页面如下图所示即为成功
-  * ![img.png](images/img.png)
+  * ![img_1.png](images/img_1.png)
 ## 功能
   * 自动播放
   * 看完自动跳转下一课
