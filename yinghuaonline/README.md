@@ -22,6 +22,14 @@
   * 刷新页面
   * 页面如下图所示即为成功
   * ![img_1.png](images/img_1.png)
+### 视频教程
+  
+  [教程视频.mp4](images/教程视频.mp4)
+
+<video controls="controls"  preload="auto">
+      <source src="images/教程视频.mp4" type="video/mp4">
+</video>
+
 ## 功能
   * 自动播放
   * 看完自动跳转下一课
