@@ -323,7 +323,7 @@
                             playState = 'playing';
                             aoaostar_player.videoPlay();
                         } else if (ret.msg !== '提交学时成功!') {
-                            aoaostar_print(`提交学时异常，${ret.msg},2秒后刷新页面`)
+                            aoaostar_print(`提交学时异常，${ret.msg}，2秒后刷新页面`)
                             setTimeout(() => {
                                 window.location.reload()
                             }, 2000)
