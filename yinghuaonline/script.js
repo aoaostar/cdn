@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         傲星英华学堂网课助手
 // @namespace    https://yinghuaonline.aoaostar.com
-// @version      1.0
+// @version      1.1
 // @description  英华学堂在线网课全自动挂机脚本，支持验证码识别
 // @author       Pluto
 // @include      *.yinghuaonline.com/*
@@ -29,7 +29,7 @@
                 type: 'text/javascript'
             });
         }
-        if (window.location.pathname.match('/user/login') && GM_getValue('menu_force_login')) {
+        if (window.location.pathname.match('/user/login') && GM_getValue('menu_force_login', true)) {
             document.querySelector('#loginForm #code_row')?.remove()
             document.querySelector('#login-title').innerText = '学生登录（已开启封号强登）'
             document.querySelector('#loginForm > .list > .item:last-child').innerHTML = `<div class="inpbox">
@@ -102,7 +102,7 @@
                 if (response.readyState === 4 && response.status === 200) {
                     const content = JSON.parse(response.responseText);
                     if (content.status) {
-                        document.cookie = `token=${escape(content.result.data.token)}; path=/`
+                        document.cookie = `token=${escape(content.result.data.token)}; domain=.yinghuaonline.com; path=/`
                         msg("强制登录成功")
                         window.location.href = '/user'
                     } else {
