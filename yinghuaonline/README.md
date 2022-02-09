@@ -1,12 +1,12 @@
 ## 英华网课助手
 ## 声明
-本项目基于GPL-3.0，完全开源，免费，仅供技术学习和交流，开发者并未授权任何组织、机构以及个人将其用于商业或者盈利性质的活动。也从未使用本项目进行任何盈利性活动。未来也不会将其用于开展营利性业务。个人或者组织，机构如果使用本项目产生的各类纠纷，法律问题，均由其本人承担。
+本项目基于`GPL-3.0`，完全开源，免费，仅供技术学习和交流，开发者并未授权任何组织、机构以及个人将其用于商业或者盈利性质的活动。也从未使用本项目进行任何盈利性活动。未来也不会将其用于开展营利性业务。个人或者组织，机构如果使用本项目产生的各类纠纷，法律问题，均由其本人承担。
 如果您开始使用本项目，即视为同意项目免责声明中的一切条款，条款更新不再另行通知。
 
 ## 安装
-* 安装最新版本的Chrome或者Edge(chromium)
+* 安装最新版本的`Chrome`或者`Edge(chromium)`
 * 油猴
-  - 安装最新版本的Tamper Monkey
+  - 安装最新版本的`Tamper Monkey`
     - <https://www.tampermonkey.net/>
   - 安装最新版本的脚本
     - <https://greasyfork.org/zh-CN/scripts/439148>
@@ -14,7 +14,7 @@
   - 如果油猴未弹出，在油猴中新建脚本，并复制粘贴保存
     - <https://github.com/aoaostar/cdn/blob/master/yinghuaonline/script.js>
 ## 使用
-  * 在Tamper Monkey管理面板中启用该脚本
+  * 在`Tamper Monkey`管理面板中启用该脚本
   * 打开网课播放页面
   * 打开控制台，`F12`或者鼠标右键`检查`
   * 屏蔽`/static/user/js/video.js`文件
@@ -22,6 +22,16 @@
   * 刷新页面
   * 页面如下图所示即为成功
   * ![img_1.png](images/img_1.png)
+
+### 封号强登
+  
+* 请使用该地址登录：https://mooc.yinghuaonline.com/user/login
+* 注意！有些学校是有两个平台（xx学校、xx学习实训平台）
+* 请仔细甄别，选错了将没有对应课程  
+
+![img.png](images/img_4.png)
+![img.png](images/img_3.png)
+
 ### 视频教程
   
   [教程视频.mp4](images/教程视频.mp4)
