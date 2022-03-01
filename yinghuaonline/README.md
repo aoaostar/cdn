@@ -5,14 +5,26 @@
 
 ## 安装
 * 安装最新版本的`Chrome`或者`Edge(chromium)`
-* 油猴
-  - 安装最新版本的`Tamper Monkey`
-    - <https://www.tampermonkey.net/>
-  - 安装最新版本的脚本
-    - <https://greasyfork.org/zh-CN/scripts/439148>
-  - 油猴理应自动弹出
-  - 如果油猴未弹出，在油猴中新建脚本，并复制粘贴保存
-    - <https://github.com/aoaostar/cdn/blob/master/yinghuaonline/script.js>
+  * 油猴
+    - 安装最新版本的`Tamper Monkey`
+      - <https://www.tampermonkey.net/>
+    - 安装最新版本的脚本
+      - <https://greasyfork.org/zh-CN/scripts/439148>
+    - 油猴理应自动弹出
+    - 如果油猴未弹出，在油猴中新建脚本，并复制粘贴保存
+      - <https://github.com/aoaostar/cdn/blob/master/yinghuaonline/script.js>
+    - 补充脚本运行域名  
+      - 由于2月底英华更新了，每个学校都用自己的域名了，而不是英华的域名  
+      - 所以现在需要自行添加自己学校网课的网址    
+        首先点击编辑脚本代码，在`// ==UserScript==`内添加一行  
+        `*`表示匹配任意字符  
+        ```
+        // @include      *你学校平台的域名/*
+        ```
+        例如：`http://xxx.com/abc`  
+        ```
+        // @include      *xxx.com/*
+        ```
 ## 使用
   * 在`Tamper Monkey`管理面板中启用该脚本
   * 打开网课播放页面
