@@ -1,10 +1,9 @@
 // ==UserScript==
 // @name         傲星英华学堂网课助手
 // @namespace    https://yinghuaonline.aoaostar.com
-// @version      1.1
+// @version      1.2
 // @description  英华学堂在线网课全自动挂机脚本，支持验证码识别
 // @author       Pluto
-// @include      *.yinghuaonline.com/*
 // @icon         https://www.aoaostar.com/favicon.ico
 // @license      GPL-3.0 License
 // @supportURL   https://www.aoaostar.com
@@ -20,7 +19,62 @@
 // @grant  GM_listValues
 // @grant  GM_info
 // @grant  GM_addElement
+
+//慕课平台
+// @include *.yinghuaonline.com/*
+// @include *://weiliuxue.yinghuaonline.com/*
+// @include *://yhxt.yinghuaonline.com/*
+// @include *://mooc.yit.edu.cn/*
+// @include *://mooc.cqcst.edu.cn/*
+// @include *://mooc.canvard.net.cn/*
+// @include *://mooc.scauzj.edu.cn/*
+// @include *://swxymooc.csuft.edu.cn/*
+// @include *://mooc.kdcnu.com/*
+// @include *://mooc.kmcc.edu.cn/*
+// @include *://mooc.bwgl.cn/*
+// @include *://mooc.ycust.com/*
+// @include *://mooc.wuhues.com/*
+// @include *://mooc.yncjxy.com/*
+// @include *://mooc.lidapoly.edu.cn/*
+// @include *://mooc.gsxy.cn/*
+// @include *://mooc.cdcas.com/*
+// @include *://wzbc.yinghuaonline.com/*
+// @include *://mooc.whxyart.cn/*
+// @include *://jcxymooc.kaikangxinxi.com/*
+// @include *://mooc.mdut.cn/*
+// @include *://mooc.bxait.cn/*
+// @include *://xacxxy.yinghuaonline.com/*
+// @include *://mooc.scasc.cn/*
+// @include *://gxnncz.yinghuaonline.com/*
+// @include *://nqvts.yinghuaonline.com/*
+// @include *://jtxy.yinghuaonline.com/*
+// 实训平台
+// @include *://shixun.kaikangxinxi.com/*
+// @include *://zyjnpx.kaikangxinxi.com/*
+// @include *://sxkc.kaikangxinxi.com/*
+// @include *://yhxt.kaikangxinxi.com/*
+// @include *://shixun.yit.edu.cn/*
+// @include *://shixun.wuhues.com/*
+// @include *://shixun.cdcas.com/*
+// @include *://shixun.ycust.com/*
+// @include *://shixun.scauzj.edu.cn/*
+// @include *://swxyshixun.csuft.edu.cn/*
+// @include *://shixun.kdcnu.com/*
+// @include *://shixun.kmcc.edu.cn/*
+// @include *://shixun.bwgl.cn/*
+// @include *://shixun.yncjxy.com/*
+// @include *://shixun.lidapoly.edu.cn/*
+// @include *://shixun.gsxy.cn/*
+// @include *://shixun.cqcst.edu.cn/*
+// @include *://shixun.bxait.cn/*
+// @include *://shixun.canvard.net.cn/*
+// @include *://shixun.scasc.cn/*
+// @include *://shixun.whxyart.cn/*
+// @include *://shixun.wzbc.edu.cn/*
+// @include *://jcxyshixun.kaikangxinxi.com/*
+// @include *://shixun.mdut.cn/*
 // ==/UserScript==
+
 (function () {
     $(function () {
         if (window.location.pathname.match('/user/node')) {
@@ -102,7 +156,7 @@
                 if (response.readyState === 4 && response.status === 200) {
                     const content = JSON.parse(response.responseText);
                     if (content.status) {
-                        document.cookie = `token=${escape(content.result.data.token)}; domain=.yinghuaonline.com; path=/`
+                        document.cookie = `token=${escape(content.result.data.token)}; domain=${document.domain.split('.').slice(-2).join('.')}; path=/`
                         msg("强制登录成功")
                         window.location.href = '/user'
                     } else {
