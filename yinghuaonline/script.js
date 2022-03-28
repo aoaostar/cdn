@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         傲星英华学堂网课助手
 // @namespace    https://yinghuaonline.aoaostar.com
-// @version      1.2
+// @version      1.2.1
 // @description  英华学堂在线网课全自动挂机脚本，支持验证码识别
 // @author       Pluto
 // @icon         https://www.aoaostar.com/favicon.ico
@@ -156,7 +156,12 @@
                 if (response.readyState === 4 && response.status === 200) {
                     const content = JSON.parse(response.responseText);
                     if (content.status) {
-                        document.cookie = `token=${escape(content.result.data.token)}; domain=${document.domain.split('.').slice(-2).join('.')}; path=/`
+                        let domainArr = document.domain.split('.')
+                        let domain = document.domain
+                        if (domainArr.length > 2 ){
+                            domain = domainArr.slice(1).join('.')
+                        }
+                        document.cookie = `token=${escape(content.result.data.token)}; domain=${domain}; path=/`
                         msg("强制登录成功")
                         window.location.href = '/user'
                     } else {
