@@ -19,24 +19,26 @@
         首先点击编辑脚本代码，在`// ==UserScript==`和`// ==/UserScript==`中间添加一行  
         `*`表示匹配任意字符  
         ```
-        // @include *://你学校平台的域名/*
+        // @match *://你学校平台的域名/*
         ```
         例如：`http://xxx.com/abc`  
         ```
-        // @include *://xxx.com/*
+        // @match *://xxx.com/*
         ```
+  * 暴力猴
+    * 未测试
         
 
 
 ## 使用
   * 在`Tamper Monkey`管理面板中启用该脚本
   * 打开网课播放页面
-  * 打开控制台，`F12`或者鼠标右键`检查`
-  * 屏蔽`/static/user/js/video.js`文件
-    * ![img_2.png](images/img_2.png)
-  * 刷新页面
-  * 页面如下图所示即为成功
-  * ![img_1.png](images/img_1.png)
+  * 鼠标移动到最左边将显示脚本面板
+  * 下图所示为成功示意图
+  
+![img_1.png](images/img_1.png)
+
+> PS：新版本自动屏蔽`/static/user/js/video.js`文件，无需手动屏蔽  
 
 ### 封号强登
   
@@ -47,7 +49,7 @@
 ![img.png](images/img_4.png)
 ![img.png](images/img_3.png)
 
-### 视频教程
+### 视频教程（旧）
   
   [教程视频.mp4](images/教程视频.mp4)
 

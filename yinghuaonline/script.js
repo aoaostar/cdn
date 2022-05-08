@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         傲星英华学堂网课助手
 // @namespace    https://yinghuaonline.aoaostar.com
-// @version      1.2.1
+// @version      2.0
 // @description  英华学堂在线网课全自动挂机脚本，支持验证码识别
 // @author       Pluto
 // @icon         https://www.aoaostar.com/favicon.ico
@@ -9,6 +9,7 @@
 // @supportURL   https://www.aoaostar.com
 // @homepageURL  https://github.com/aoaostar
 // @connect *
+// @webRequest   {"selector": "*/video.js*", "action": "cancel"}
 // @grant  GM_addElement
 // @grant  GM_setValue
 // @grant  GM_getValue
@@ -18,79 +19,94 @@
 // @grant  GM_notification
 // @grant  GM_listValues
 // @grant  GM_info
-// @grant  GM_addElement
+// @grant  GM_log
 
-//慕课平台
-// @include *.yinghuaonline.com/*
-// @include *://weiliuxue.yinghuaonline.com/*
-// @include *://yhxt.yinghuaonline.com/*
-// @include *://mooc.yit.edu.cn/*
-// @include *://mooc.cqcst.edu.cn/*
-// @include *://mooc.canvard.net.cn/*
-// @include *://mooc.scauzj.edu.cn/*
-// @include *://swxymooc.csuft.edu.cn/*
-// @include *://mooc.kdcnu.com/*
-// @include *://mooc.kmcc.edu.cn/*
-// @include *://mooc.bwgl.cn/*
-// @include *://mooc.ycust.com/*
-// @include *://mooc.wuhues.com/*
-// @include *://mooc.yncjxy.com/*
-// @include *://mooc.lidapoly.edu.cn/*
-// @include *://mooc.gsxy.cn/*
-// @include *://mooc.cdcas.com/*
-// @include *://wzbc.yinghuaonline.com/*
-// @include *://mooc.whxyart.cn/*
-// @include *://jcxymooc.kaikangxinxi.com/*
-// @include *://mooc.mdut.cn/*
-// @include *://mooc.bxait.cn/*
-// @include *://xacxxy.yinghuaonline.com/*
-// @include *://mooc.scasc.cn/*
-// @include *://gxnncz.yinghuaonline.com/*
-// @include *://nqvts.yinghuaonline.com/*
-// @include *://jtxy.yinghuaonline.com/*
-// 实训平台
-// @include *://shixun.kaikangxinxi.com/*
-// @include *://zyjnpx.kaikangxinxi.com/*
-// @include *://sxkc.kaikangxinxi.com/*
-// @include *://yhxt.kaikangxinxi.com/*
-// @include *://shixun.yit.edu.cn/*
-// @include *://shixun.wuhues.com/*
-// @include *://shixun.cdcas.com/*
-// @include *://shixun.ycust.com/*
-// @include *://shixun.scauzj.edu.cn/*
-// @include *://swxyshixun.csuft.edu.cn/*
-// @include *://shixun.kdcnu.com/*
-// @include *://shixun.kmcc.edu.cn/*
-// @include *://shixun.bwgl.cn/*
-// @include *://shixun.yncjxy.com/*
-// @include *://shixun.lidapoly.edu.cn/*
-// @include *://shixun.gsxy.cn/*
-// @include *://shixun.cqcst.edu.cn/*
-// @include *://shixun.bxait.cn/*
-// @include *://shixun.canvard.net.cn/*
-// @include *://shixun.scasc.cn/*
-// @include *://shixun.whxyart.cn/*
-// @include *://shixun.wzbc.edu.cn/*
-// @include *://jcxyshixun.kaikangxinxi.com/*
-// @include *://shixun.mdut.cn/*
+// @note ==慕课平台==
+// @match *.yinghuaonline.com/*
+// @match *://weiliuxue.yinghuaonline.com/*
+// @match *://yhxt.yinghuaonline.com/*
+// @match *://mooc.yit.edu.cn/*
+// @match *://mooc.cqcst.edu.cn/*
+// @match *://mooc.canvard.net.cn/*
+// @match *://mooc.scauzj.edu.cn/*
+// @match *://swxymooc.csuft.edu.cn/*
+// @match *://mooc.kdcnu.com/*
+// @match *://mooc.kmcc.edu.cn/*
+// @match *://mooc.bwgl.cn/*
+// @match *://mooc.ycust.com/*
+// @match *://mooc.wuhues.com/*
+// @match *://mooc.yncjxy.com/*
+// @match *://mooc.lidapoly.edu.cn/*
+// @match *://mooc.gsxy.cn/*
+// @match *://mooc.cdcas.com/*
+// @match *://wzbc.yinghuaonline.com/*
+// @match *://mooc.whxyart.cn/*
+// @match *://jcxymooc.kaikangxinxi.com/*
+// @match *://mooc.mdut.cn/*
+// @match *://mooc.bxait.cn/*
+// @match *://xacxxy.yinghuaonline.com/*
+// @match *://mooc.scasc.cn/*
+// @match *://gxnncz.yinghuaonline.com/*
+// @match *://nqvts.yinghuaonline.com/*
+// @match *://jtxy.yinghuaonline.com/*
+
+// @note ==实训平台==
+// @match *://shixun.kaikangxinxi.com/*
+// @match *://zyjnpx.kaikangxinxi.com/*
+// @match *://sxkc.kaikangxinxi.com/*
+// @match *://yhxt.kaikangxinxi.com/*
+// @match *://shixun.yit.edu.cn/*
+// @match *://shixun.wuhues.com/*
+// @match *://shixun.cdcas.com/*
+// @match *://shixun.ycust.com/*
+// @match *://shixun.scauzj.edu.cn/*
+// @match *://swxyshixun.csuft.edu.cn/*
+// @match *://shixun.kdcnu.com/*
+// @match *://shixun.kmcc.edu.cn/*
+// @match *://shixun.bwgl.cn/*
+// @match *://shixun.yncjxy.com/*
+// @match *://shixun.lidapoly.edu.cn/*
+// @match *://shixun.gsxy.cn/*
+// @match *://shixun.cqcst.edu.cn/*
+// @match *://shixun.bxait.cn/*
+// @match *://shixun.canvard.net.cn/*
+// @match *://shixun.scasc.cn/*
+// @match *://shixun.whxyart.cn/*
+// @match *://shixun.wzbc.edu.cn/*
+// @match *://jcxyshixun.kaikangxinxi.com/*
+// @match *://shixun.mdut.cn/*
 // ==/UserScript==
 
 (function () {
     $(function () {
+        // 去除烦人的第一次登录信息框
+        $('.layui-layer-content').text().includes("您可能是第一次登录系统") && layer.closeAll()
+
+        //初始化面板
+        init_panel()
+
         if (window.location.pathname.match('/user/node')) {
+
             GM_addElement('script', {
-                src: "//cdn.aoaostar.com/yinghuaonline/main.min.js?v=" + new Date().getTime(),
+                src: "//cdn.aoaostar.com/yinghuaonline/main.min.js?v=" + GM_info.version,
                 type: 'text/javascript'
             });
         }
         if (window.location.pathname.match('/user/login') && GM_getValue('menu_force_login', true)) {
-            document.querySelector('#loginForm #code_row')?.remove()
-            document.querySelector('#login-title').innerText = '学生登录（已开启封号强登）'
-            document.querySelector('#loginForm > .list > .item:last-child').innerHTML = `<div class="inpbox">
+            $('#loginForm #code_row')?.remove()
+            $('#login-title').text('学生登录（已开启封号强登）')
+            $('#loginForm > .list > .item:last-child').html(`<div class="inpbox">
                                 <input type="button" class="btn" id="force_login" value="强制登录"/>
-                            </div>`
+                            </div>`)
             $("#loginForm").off()
-            document.getElementById('force_login').onclick = force_login
+            $('#force_login').click(force_login)
+            // 监听回车
+            $("#password").keydown((e) => {
+                if (e.keyCode === 13) {
+                    e.preventDefault();
+                    $('#force_login').click()
+                }
+            })
         }
     })
     const MenuCommands = [
@@ -158,7 +174,7 @@
                     if (content.status) {
                         let domainArr = document.domain.split('.')
                         let domain = document.domain
-                        if (domainArr.length > 2 ){
+                        if (domainArr.length > 2) {
                             domain = domainArr.slice(1).join('.')
                         }
                         document.cookie = `token=${escape(content.result.data.token)}; domain=${domain}; path=/`
@@ -173,4 +189,44 @@
         })
     }
 
+    function init_panel() {
+        const el = `<span class="aoaostar-drawer-guide" style="">👈</span>
+<div class="aoaostar">
+    <div class="info">
+        <div class="title">
+            <h1>傲星英华学堂网课助手</h1>
+            <a class="link" href="https://www.aoaostar.com" target="_blank">https://www.aoaostar.com</a>
+        </div>
+        <div class="flex justify-center">
+            <a class="tag" href="https://github.com/aoaostar" target="_blank">
+                <span>作者</span><span>Pluto</span>
+            </a>   
+            <a class="tag" href="https://github.com/aoaostar/cdn/tree/master/yinghuaonline" target="_blank">
+                <span>版本号</span><span>v${GM_info.version || '获取失败'}</span>
+            </a>   
+        </div>
+        <div class="flex justify-center">
+            <div class="tag">
+                <span>当前课程ID</span><span id="course-id">正在获取</span>
+            </div>
+            <div class="tag">
+                <span>当前章节ID</span><span id="node-id">正在获取</span>
+            </div>
+        </div>
+        <div class="tag justify-center">
+            <span>课程名称</span><span id="course-title">正在获取</span>
+        </div>
+        <div class="tag justify-center">
+            <span>视频时长</span><span id="course-duration">正在获取</span>
+        </div>
+    </div>
+    <div class="output"></div>
+</div>`
+        GM_addElement('link', {
+            href: "//cdn.aoaostar.com/yinghuaonline/style.css?v=" + GM_info.version,
+            rel: 'stylesheet'
+        });
+        $(document.body).append(el)
+
+    }
 })()
