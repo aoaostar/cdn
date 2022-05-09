@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         傲星英华学堂网课助手
 // @namespace    https://yinghuaonline.aoaostar.com
-// @version      2.0
+// @version      2.1
 // @description  英华学堂在线网课全自动挂机脚本，支持验证码识别
 // @author       Pluto
 // @icon         https://www.aoaostar.com/favicon.ico
@@ -9,7 +9,7 @@
 // @supportURL   https://www.aoaostar.com
 // @homepageURL  https://github.com/aoaostar
 // @connect *
-// @webRequest   {"selector": "*/video.js*", "action": "cancel"}
+// @webRequest   {"selector": "*static/user/js/video.js*", "action": "cancel"}
 // @grant  GM_addElement
 // @grant  GM_setValue
 // @grant  GM_getValue
@@ -145,10 +145,10 @@
         const password = $('#password').val() || '';
         const schoolId = $('#schoolId').val() || '';
         if ($('#remember').is(':checked') && window.localStorage) {
-            window.localStorage.setItem("schoolId", schoolId);
-            window.localStorage.setItem("userName", username);
-            window.localStorage.setItem("passWord", password);
-            window.localStorage.setItem("remember", '1');
+            localStorage.setItem("schoolId", schoolId);
+            localStorage.setItem("userName", username);
+            localStorage.setItem("passWord", password);
+            localStorage.setItem("remember", '1');
         }
         let data = {
             platform: 'Android',
@@ -190,6 +190,11 @@
     }
 
     function init_panel() {
+        GM_addElement('link', {
+            href: "//cdn.aoaostar.com/yinghuaonline/style.css?v=" + GM_info.version,
+            rel: 'stylesheet'
+        });
+
         const el = `<span class="aoaostar-drawer-guide" style="">👈</span>
 <div class="aoaostar">
     <div class="info">
@@ -216,17 +221,17 @@
         <div class="tag justify-center">
             <span>课程名称</span><span id="course-title">正在获取</span>
         </div>
-        <div class="tag justify-center">
-            <span>视频时长</span><span id="course-duration">正在获取</span>
+        <div class="flex justify-center">
+            <div class="tag">
+                <span>视频总数</span><span id="node-count">正在获取</span>
+            </div>
+            <div class="tag">
+                <span>视频时长</span><span id="course-duration">正在获取</span>
+            </div>
         </div>
     </div>
     <div class="output"></div>
 </div>`
-        GM_addElement('link', {
-            href: "//cdn.aoaostar.com/yinghuaonline/style.css?v=" + GM_info.version,
-            rel: 'stylesheet'
-        });
         $(document.body).append(el)
-
     }
 })()
