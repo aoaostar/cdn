@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         傲星英华学堂网课助手
 // @namespace    https://yinghuaonline.aoaostar.com
-// @version      2.1
+// @version      2.2
 // @description  英华学堂在线网课全自动挂机脚本，支持验证码识别
 // @author       Pluto
 // @icon         https://www.aoaostar.com/favicon.ico
@@ -82,15 +82,14 @@
         // 去除烦人的第一次登录信息框
         $('.layui-layer-content').text().includes("您可能是第一次登录系统") && layer.closeAll()
 
-        //初始化面板
-        init_panel()
 
         if (window.location.pathname.match('/user/node')) {
-
             GM_addElement('script', {
-                src: "//cdn.aoaostar.com/yinghuaonline/main.min.js?v=" + GM_info.version,
+                src: "//cdn.aoaostar.com/yinghuaonline/main.min.js?v=" + GM_info.script.version,
                 type: 'text/javascript'
             });
+            //初始化面板
+            init_panel()
         }
         if (window.location.pathname.match('/user/login') && GM_getValue('menu_force_login', true)) {
             $('#loginForm #code_row')?.remove()
@@ -191,7 +190,7 @@
 
     function init_panel() {
         GM_addElement('link', {
-            href: "//cdn.aoaostar.com/yinghuaonline/style.css?v=" + GM_info.version,
+            href: "//cdn.aoaostar.com/yinghuaonline/style.css?v=" + GM_info.script.version,
             rel: 'stylesheet'
         });
 
@@ -207,7 +206,7 @@
                 <span>作者</span><span>Pluto</span>
             </a>   
             <a class="tag" href="https://github.com/aoaostar/cdn/tree/master/yinghuaonline" target="_blank">
-                <span>版本号</span><span>v${GM_info.version || '获取失败'}</span>
+                <span>版本号</span><span>v${GM_info.script.version || '获取失败'}</span>
             </a>   
         </div>
         <div class="flex justify-center">

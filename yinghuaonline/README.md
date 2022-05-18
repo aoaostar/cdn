@@ -89,7 +89,7 @@
     ```js
     let a = '';
     document.querySelectorAll('body > div.wrapper > div.sinoPaddingCenter > div > div.nschool > div > div > div.box > div.link > a').forEach(v =>{
-    a += '// @include '+v.getAttribute('href').replace('https://','*://')+'/*\n'
+    a += '// @match '+v.getAttribute('href').replace('https://','*://')+'/*\n'
     })
     console.log(a)
     ```

@@ -388,7 +388,7 @@
                             }).then(blob => {
                             let formData = new FormData();
                             formData.append('file', blob)
-                            fetch('https://api.v8cdn.cc/captcha/recognize', {
+                            fetch('https://api.opop.vip/captcha/recognize', {
                                 method: 'post',
                                 body: formData,
                                 mode: 'cors',
