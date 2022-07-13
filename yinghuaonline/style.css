@@ -18,10 +18,6 @@ html {
     --aoaostar-info: #17a2b8;
 }
 
-.aoaostar {
-    display: block !important;
-}
-
 .aoaostar .block {
     display: block !important;
 }
@@ -107,7 +103,7 @@ html {
     top: 0;
     transition: all 0.5s linear;
     z-index: 999;
-    display: flex;
+    display: flex !important;
     flex-direction: column;
     box-sizing: border-box;
     box-shadow: 1px 0 10px var(--aoaostar-gray);
