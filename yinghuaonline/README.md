@@ -39,7 +39,7 @@
 ![](images/img_4.png)
 ![](images/img_3.png)
 
-### 视频教程（旧，废弃）
+### 视频教程
   
   [教程视频.mp4](images/教程视频.mp4)
 
