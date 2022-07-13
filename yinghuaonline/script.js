@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         傲星英华学堂网课助手
 // @namespace    https://yinghuaonline.aoaostar.com
-// @version      2.2
+// @version      2.3
 // @description  英华学堂在线网课全自动挂机脚本，支持验证码识别
 // @author       Pluto
 // @icon         https://www.aoaostar.com/favicon.ico
@@ -9,6 +9,7 @@
 // @supportURL   https://www.aoaostar.com
 // @homepageURL  https://github.com/aoaostar
 // @connect *
+// @match */*
 // @webRequest   {"selector": "*static/user/js/video.js*", "action": "cancel"}
 // @grant  GM_addElement
 // @grant  GM_setValue
@@ -20,76 +21,24 @@
 // @grant  GM_listValues
 // @grant  GM_info
 // @grant  GM_log
-
-// @note ==慕课平台==
-// @match *.yinghuaonline.com/*
-// @match *://weiliuxue.yinghuaonline.com/*
-// @match *://yhxt.yinghuaonline.com/*
-// @match *://mooc.yit.edu.cn/*
-// @match *://mooc.cqcst.edu.cn/*
-// @match *://mooc.canvard.net.cn/*
-// @match *://mooc.scauzj.edu.cn/*
-// @match *://swxymooc.csuft.edu.cn/*
-// @match *://mooc.kdcnu.com/*
-// @match *://mooc.kmcc.edu.cn/*
-// @match *://mooc.bwgl.cn/*
-// @match *://mooc.ycust.com/*
-// @match *://mooc.wuhues.com/*
-// @match *://mooc.yncjxy.com/*
-// @match *://mooc.lidapoly.edu.cn/*
-// @match *://mooc.gsxy.cn/*
-// @match *://mooc.cdcas.com/*
-// @match *://wzbc.yinghuaonline.com/*
-// @match *://mooc.whxyart.cn/*
-// @match *://jcxymooc.kaikangxinxi.com/*
-// @match *://mooc.mdut.cn/*
-// @match *://mooc.bxait.cn/*
-// @match *://xacxxy.yinghuaonline.com/*
-// @match *://mooc.scasc.cn/*
-// @match *://gxnncz.yinghuaonline.com/*
-// @match *://nqvts.yinghuaonline.com/*
-// @match *://jtxy.yinghuaonline.com/*
-
-// @note ==实训平台==
-// @match *://shixun.kaikangxinxi.com/*
-// @match *://zyjnpx.kaikangxinxi.com/*
-// @match *://sxkc.kaikangxinxi.com/*
-// @match *://yhxt.kaikangxinxi.com/*
-// @match *://shixun.yit.edu.cn/*
-// @match *://shixun.wuhues.com/*
-// @match *://shixun.cdcas.com/*
-// @match *://shixun.ycust.com/*
-// @match *://shixun.scauzj.edu.cn/*
-// @match *://swxyshixun.csuft.edu.cn/*
-// @match *://shixun.kdcnu.com/*
-// @match *://shixun.kmcc.edu.cn/*
-// @match *://shixun.bwgl.cn/*
-// @match *://shixun.yncjxy.com/*
-// @match *://shixun.lidapoly.edu.cn/*
-// @match *://shixun.gsxy.cn/*
-// @match *://shixun.cqcst.edu.cn/*
-// @match *://shixun.bxait.cn/*
-// @match *://shixun.canvard.net.cn/*
-// @match *://shixun.scasc.cn/*
-// @match *://shixun.whxyart.cn/*
-// @match *://shixun.wzbc.edu.cn/*
-// @match *://jcxyshixun.kaikangxinxi.com/*
-// @match *://shixun.mdut.cn/*
+// @require https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js
+// @require https://mooc.yinghuaonline.com/ckplayer/ckplayer.js
+// @require https://cdn.aoaostar.com/yinghuaonline/main.min.js?v=2.3
+// @run-at document-idle
 // ==/UserScript==
 
 (function () {
     $(function () {
+        if (!contain_platform()){
+            return
+        }
         // 去除烦人的第一次登录信息框
         $('.layui-layer-content').text().includes("您可能是第一次登录系统") && layer.closeAll()
 
-
         if (window.location.pathname.match('/user/node')) {
-            GM_addElement('script', {
-                src: "//cdn.aoaostar.com/yinghuaonline/main.min.js?v=" + GM_info.script.version,
-                type: 'text/javascript'
-            });
             //初始化面板
             init_panel()
+            aoaostar_main()
         }
         if (window.location.pathname.match('/user/login') && GM_getValue('menu_force_login', true)) {
             $('#loginForm #code_row')?.remove()
@@ -113,7 +62,19 @@
             title: (GM_getValue('menu_force_login', true) ? '✅' : '❌') + " 强制登录（封号强登）",
             func: function () {
                 GM_setValue('menu_force_login', !GM_getValue('menu_force_login', true))
-                msg('切换成功，刷新网页后生效')
+                notification('切换成功')
+                location.reload()
+            }
+        },
+        {
+            title: `${!contain_platform() ? '🍀 添加' : '🍁 删除'}平台`,
+            func: function () {
+                const b = contain_platform();
+                let platforms_data = new Set(GM_getValue('platforms_data', []))
+                !b ? platforms_data.add(document.domain) : platforms_data.delete(document.domain)
+                GM_setValue('platforms_data', [...platforms_data])
+                notification(`${b ? '删除' : '添加'}平台成功`)
+                location.reload()
             }
         },
         {
@@ -130,13 +91,6 @@
         for (const command of MenuCommands) {
             GM_registerMenuCommand(command.title, command.func)
         }
-    }
-
-    function msg(message) {
-        GM_notification({
-            text: message,
-            timeout: 4000,
-        })
     }
 
     function force_login() {
@@ -177,10 +131,10 @@
                             domain = domainArr.slice(1).join('.')
                         }
                         document.cookie = `token=${escape(content.result.data.token)}; domain=${domain}; path=/`
-                        msg("强制登录成功")
+                        notification("强制登录成功")
                         window.location.href = '/user'
                     } else {
-                        msg("登录失败！" + content.msg)
+                        notification("登录失败！" + content.msg)
                     }
                 }
 
@@ -195,7 +149,7 @@
         });
 
         const el = `<span class="aoaostar-drawer-guide" style="">👈</span>
-<div class="aoaostar">
+<div class="aoaostar" style="display: none">
     <div class="info">
         <div class="title">
             <h1>傲星英华学堂网课助手</h1>
@@ -232,5 +186,9 @@
     <div class="output"></div>
 </div>`
         $(document.body).append(el)
+    }
+
+    function contain_platform() {
+        return new Set(GM_getValue('platforms_data', [])).has(document.domain)
     }
 })()

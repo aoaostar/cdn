@@ -8,306 +8,308 @@
 *
 *                                            By:Pluto
 */
-(function () {
 
-    function aoaostar_print() {
-        if (window.console && window.console.log) {
-            for (const argument of arguments) {
-                console.log("%c " + argument, "color: #fff; margin: 1em 0; padding: 5px 0; background: #222f3e;");
-            }
+function aoaostar_dump() {
+    if (window.console && window.console.log) {
+        console.log(...arguments);
+    }
+}
+function notification(message) {
+    GM_notification({
+        text: message,
+        timeout: 4000,
+    })
+}
+function aoaostar_log() {
+    for (const argument of arguments) {
+        if ($('.output :last-child .inline-block').text() === argument.toString()) {
+            let count = parseInt($('.output :last-child .count').text()) || 0
+            $('.output :last-child .count').text(count + 1)
+            $('.output :last-child .count').removeClass('hidden')
+        } else {
+            $('.output').append(`<li><div class="inline-block">${argument}</div><span class="count hidden"></span></li>`)
         }
     }
+    $('.output').scrollTop($('.output')[0]?.scrollHeight);
+}
 
-    function aoaostar_dump() {
-        if (window.console && window.console.log) {
-            console.log(...arguments);
+//获取get参数
+function get_query_variable(variable, url = null) {
+    let query = window.location.search.substring(1);
+
+    if (url != null) {
+        url.substr(url.indexOf("?") + 1);
+        query = url.substr(url.indexOf("?") + 1);
+    }
+    const vars = query.split("&");
+    for (let i = 0; i < vars.length; i++) {
+        const pair = vars[i].split("=");
+        if (pair[0] === variable) {
+            return pair[1];
         }
     }
+    return false;
+}
 
-    function aoaostar_log() {
-        for (const argument of arguments) {
-            if ($('.output :last-child .inline-block').text() === argument.toString()) {
-                let count = parseInt($('.output :last-child .count').text()) || 0
-                $('.output :last-child .count').text(count + 1)
-                $('.output :last-child .count').removeClass('hidden')
-            } else {
-                $('.output').append(`<li><div class="inline-block">${argument}</div><span class="count hidden"></span></li>`)
-            }
+//获取cookie值
+function get_cookie(name) {
+    let arr = document.cookie.split("; ");
+    for (let i = 0; i < arr.length; i++) {
+        let arr2 = arr[i].split("=");
+        if (arr2[0] === name) {
+            return arr2[1];
         }
-        $('.output').scrollTop($('.output')[0].scrollHeight);
     }
+    return "";
+}
 
-    //获取get参数
-    function get_query_variable(variable, url = null) {
-        let query = window.location.search.substring(1);
+let aoaostar_player = null;
+let videoIsOver = false;
 
-        if (url != null) {
-            url.substr(url.indexOf("?") + 1);
-            query = url.substr(url.indexOf("?") + 1);
+const storage = {
+    set: function (name, value) {
+        if (window.localStorage) {
+            window.localStorage.setItem(name, value);
+            return;
         }
-        const vars = query.split("&");
-        for (let i = 0; i < vars.length; i++) {
-            const pair = vars[i].split("=");
-            if (pair[0] === variable) {
-                return pair[1];
-            }
+        var Days = 30;
+        var exp = new Date();
+        exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+        document.cookie = name + '=' + escape(value) + ';expires=' + exp.toGMTString();
+    },
+    get: function (name) {
+        if (window.localStorage) {
+            return window.localStorage.getItem(name);
         }
-        return false;
+        var arr, reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)');
+        if (arr = document.cookie.match(reg)) {
+            return unescape(arr[2]);
+        } else {
+            return null;
+        }
+    },
+    del: function (name) {
+        if (window.localStorage) {
+            return window.localStorage.removeItem(name);
+        }
+
+        var exp = new Date();
+        exp.setTime(exp.getTime() - 1);
+        var cval = this.get(name);
+        if (cval != null) {
+            document.cookie = name + '=' + cval + ';expires=' + exp.toGMTString();
+        }
     }
+};
 
-    //获取cookie值
-    function get_cookie(name) {
-        let arr = document.cookie.split("; ");
-        for (let i = 0; i < arr.length; i++) {
-            let arr2 = arr[i].split("=");
-            if (arr2[0] === name) {
-                return arr2[1];
-            }
-        }
-        return "";
-    }
-
-    const storage = {
-        set: function (name, value) {
-            if (window.localStorage) {
-                window.localStorage.setItem(name, value);
-                return;
-            }
-            var Days = 30;
-            var exp = new Date();
-            exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
-            document.cookie = name + '=' + escape(value) + ';expires=' + exp.toGMTString();
-        },
-        get: function (name) {
-            if (window.localStorage) {
-                return window.localStorage.getItem(name);
-            }
-            var arr, reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)');
-            if (arr = document.cookie.match(reg)) {
-                return unescape(arr[2]);
-            } else {
-                return null;
-            }
-        },
-        del: function (name) {
-            if (window.localStorage) {
-                return window.localStorage.removeItem(name);
-            }
-
-            var exp = new Date();
-            exp.setTime(exp.getTime() - 1);
-            var cval = this.get(name);
-            if (cval != null) {
-                document.cookie = name + '=' + cval + ';expires=' + exp.toGMTString();
-            }
-        }
-    };
-
-    //controller
-    const aoaostar = {
-        player: null,
-        node_list: [],
-        current_node_id: 0,
-        course_id: 0,
-        main_interval: null,
-        initialize: function () {
-            this.player = aoaostar_player
-            this.current_node_id = parseInt(get_query_variable('nodeId'))
-            this.course_id = this.get_course_id()
-            this.get_node_list().then(res => {
-                this.node_list = res
-                //视频总数显示
-                $('#node-count').text(this.node_list.length)
-            })
-            this.get_node(this.current_node_id).then(current_node => {
-                const interval = setInterval(() => {
-                    if (this.player.time >= parseInt(current_node.study_total.duration)) {
-                        clearInterval(interval)
-                    }
-                    this.player.videoSeek(current_node.study_total.duration);
-                }, 1500)
-            })
-            $('#course-id').text(this.course_id)
-            $('#node-id').text(this.current_node_id)
-            $('#course-title').text($('.detmain-navlist .group .list .item a.on').text())
+//controller
+const aoaostar = {
+    player: null,
+    node_list: [],
+    current_node_id: 0,
+    course_id: 0,
+    main_interval: null,
+    remind_sound: 'https://downsc.chinaz.net/Files/DownLoad/sound1/201411/5140.mp3',
+    initialize() {
+        this.player = aoaostar_player
+        this.current_node_id = parseInt(get_query_variable('nodeId'))
+        console.log(this)
+        this.course_id = this.get_course_id()
+        this.get_node_list().then(res => {
+            this.node_list = res
+            //视频总数显示
+            $('#node-count').text(this.node_list.length)
+        })
+        this.get_node(this.current_node_id).then(current_node => {
             const interval = setInterval(() => {
-                this.player.getMetaDate()?.duration && $('#course-duration').text(this.player.getMetaDate()?.duration + "秒") && clearInterval(interval)
-            }, 1000)
-
-            if (window.console && window.console.log) {
-                console.clear();
-            }
-            aoaostar_dump("%c 傲星英华学堂网课助手 %c https://www.aoaostar.com ",
-                "color: #fadfa3; background: #030307; padding:5px 0;",
-                "background: #fadfa3; padding:5px 0;");
-
-            aoaostar_dump(`%c 当前课程ID：${this.course_id} %c 章节ID：${this.current_node_id}`,
-                'background: #35495e; padding: 4px; border-radius: 3px 0 0 3px; color: #fff',
-                'background: #41b883; padding: 4px; border-radius: 0 3px 3px 0; color: #fff',
-            );
-            aoaostar_dump("%c 脚本加载完成 当前时间：" + new Date().toLocaleString(),
-                "color: #fff; margin: 1em 0; padding: 5px 0; background: #636e72;"
-            );
-            aoaostar_log("脚本加载完成 当前时间：" + new Date().toLocaleString());
-        },
-        main: function () {
-            if (!this.judgement_state()) {
-                return
-            }
-            let that = this
-            if (document.getElementById("videoContent") == null && that.is_over()) {
-                aoaostar_log("恭喜你，已全部刷完");
-            }
-            this.main_interval = setInterval(() => {
-                aoaostar_log("播放状态检查，是否播放完成：" + videoIsOver);
-                if (videoIsOver === true) {
-                    that.over();
+                if (this.player.time >= parseInt(current_node.study_total.duration)) {
+                    clearInterval(interval)
                 }
-            }, 3000);
+                this.player.videoSeek(current_node.study_total.duration);
+            }, 1500)
+        })
+        $('#course-id').text(this.course_id)
+        $('#node-id').text(this.current_node_id)
+        $('#course-title').text($('.detmain-navlist .group .list .item a.on').text())
+        const interval = setInterval(() => {
+            this.player.getMetaDate()?.duration && $('#course-duration').text(this.player.getMetaDate()?.duration + "秒") && clearInterval(interval)
+        }, 1000)
 
-        },
-        get_course_id: function () {
-
-            let courseUrl = document.querySelector(".wrapper .curPlace .center");
-            if (courseUrl == null) {
-                courseUrl = window.location.href;
-                this.course_id = get_query_variable("courseId", courseUrl);
-            } else {
-                this.course_id = get_query_variable("courseId", courseUrl.lastChild.href);
-            }
-
-            if (get_query_variable("courseId") === false) {
-                window.location.href = this.get_full_url({
-                    id: this.current_node_id
-                });
-            }
-            return this.course_id
-        },
-        over: function () {
-            aoaostar_log("播放完成");
-            let duration = this.player.getMetaDate().duration;
-            aoaostar_log("视频长度为" + duration + "秒");
-            if (this.is_over()) {
-                aoaostar_log("恭喜你，已全部刷完");
-                clearInterval(this.main_interval);
-            } else {
-                aoaostar_log("2秒后跳转下一部");
-                let that = this
-                setTimeout(function () {
-                    window.location.href = that.get_full_url(that.get_new_node());
-                }, 2000);
-            }
-        },
-
-
-        //获取当前状态，判断是否为播放页
-        judgement_state() {
-            let that = this
-            if (document.getElementById("error-main") != null) {
-                if (document.querySelector("#error-main .name").innerText === "章节数据有误,联系老师!") {
-                    aoaostar_log("章节数据有误,准备跳转下一部");
-                    setTimeout(function () {
-                        window.location.href = this.get_full_url(this.get_new_node());
-                    }, 2000);
-                    return false;
-                }
-                if (document.querySelector("#error-main .name").innerText === "当前章节尚未解锁，请先学完上一个视频") {
-                    aoaostar_log("当前章节尚未解锁，准备跳转上一部");
-
-                    setTimeout(function () {
-                        window.location.href = that.get_full_url(that.get_new_node());
-                    }, 2000);
-                    return false;
-                }
-                return false;
-            }
-            if (this.node_list[this.node_list.length - 1] === this.current_node_id) {
-                aoaostar_log("恭喜你，当前为最后一课");
-                return true;
-            } else if (document.getElementById("videoContent") == null) {
-                aoaostar_log("当前页面没有发现播放信息，准备跳转下一部");
-                setTimeout(function () {
-                    window.location.href = that.get_full_url(that.get_new_node());
-                }, 2000);
-                return false;
-            }
-            return true;
-        },
-        //获取当前课程所有id数组
-        get_node_list: function () {
-            return $.post('/api/course/chapter.json', {
-                courseId: this.course_id,
-                token: get_cookie('token'),
-            }).then(res => {
-                let arr = []
-                for (const chapter of res.result.list) {
-                    for (const node of chapter.nodeList) {
-                        node.tabVideo && arr.push(node)
-                    }
-                }
-                return arr
-            })
-        },
-        //获取最新未学、未学完的node
-        get_new_node: function () {
-            for (const node of this.node_list) {
-                if (node.videoState !== 2) {
-                    return node
-                }
-            }
-            aoaostar_log("获取最新未学视频失败，跳转第一课");
-            return this.node_list[0];
-        },
-        //获取node list中指定node信息
-        get_list_node: function (node_id) {
-            console.log(this.node_list)
-            for (const node of this.node_list) {
-                if (node.id !== node_id) {
-                    return node
-                }
-            }
-            aoaostar_log("获取最新未学视频失败，跳转最新课");
-            return this.get_new_node();
-        },
-        //获取指定node信息
-        get_node: function (node_id) {
-            return $.post('/api/node/video.json', {
-                nodeId: node_id,
-                token: get_cookie('token'),
-            }).then(res => {
-                return res.result.data
-            })
-        },
-        //判断是否学完
-        is_over: function () {
-            return this.node_list[this.node_list.length - 1].id === this.current_node_id;
-        },
-        //拼接完整课程Url
-        get_full_url: function (node) {
-            return `${window.location.origin}/user/node?courseId=${this.course_id}&nodeId=${node.id}&t=${new Date().getTime()}`
+        if (window.console && window.console.log) {
+            console.clear();
         }
+        aoaostar_dump("%c 傲星英华学堂网课助手 %c https://www.aoaostar.com ",
+            "color: #fadfa3; background: #030307; padding:5px 0;",
+            "background: #fadfa3; padding:5px 0;");
+
+        aoaostar_dump(`%c 当前课程ID：${this.course_id} %c 章节ID：${this.current_node_id}`,
+            'background: #35495e; padding: 4px; border-radius: 3px 0 0 3px; color: #fff',
+            'background: #41b883; padding: 4px; border-radius: 0 3px 3px 0; color: #fff',
+        );
+        aoaostar_dump("%c 脚本加载完成 当前时间：" + new Date().toLocaleString(),
+            "color: #fff; margin: 1em 0; padding: 5px 0; background: #636e72;"
+        );
+        aoaostar_log("脚本加载完成 当前时间：" + new Date().toLocaleString());
+    },
+    main() {
+        if (!this.judgement_state()) {
+            return
+        }
+        if (document.getElementById("videoContent") == null && this.is_over()) {
+            aoaostar_log("恭喜你，已全部刷完");
+        }
+        this.main_interval = setInterval(() => {
+            aoaostar_log("播放状态检查，是否播放完成：" + videoIsOver);
+            if (videoIsOver === true) {
+                this.over();
+            }
+        }, 3000);
+
+    },
+    get_course_id() {
+
+        let courseUrl = document.querySelector(".wrapper .curPlace .center");
+        if (courseUrl == null) {
+            courseUrl = window.location.href;
+            this.course_id = get_query_variable("courseId", courseUrl);
+        } else {
+            this.course_id = get_query_variable("courseId", courseUrl.lastChild.href);
+        }
+
+        if (get_query_variable("courseId") === false) {
+            window.location.href = this.get_full_url({
+                id: this.current_node_id
+            });
+        }
+        return this.course_id
+    },
+    over() {
+        aoaostar_log("播放完成");
+        let duration = this.player.getMetaDate().duration;
+        aoaostar_log("视频长度为" + duration + "秒");
+        if (this.is_over()) {
+            aoaostar_log("恭喜你，已全部刷完");
+            notification("恭喜你，已全部刷完")
+            clearInterval(this.main_interval);
+            try {
+                let reminder = document.createElement('audio');
+                reminder.src = this.remind_sound
+                reminder.volume = 1
+                reminder.play()
+            } catch (e) {
+            }
+        } else {
+            aoaostar_log("2秒后跳转下一部");
+            setTimeout(() => {
+                window.location.href = this.get_full_url(this.get_new_node());
+            }, 2000);
+        }
+    },
+
+
+    //获取当前状态，判断是否为播放页
+    judgement_state() {
+        if (document.getElementById("error-main") != null) {
+            if (document.querySelector("#error-main .name").innerText === "章节数据有误,联系老师!") {
+                aoaostar_log("章节数据有误,准备跳转下一部");
+                setTimeout(() => {
+                    window.location.href = this.get_full_url(this.get_new_node());
+                }, 2000);
+                return false;
+            }
+            if (document.querySelector("#error-main .name").innerText === "当前章节尚未解锁，请先学完上一个视频") {
+                aoaostar_log("当前章节尚未解锁，准备跳转上一部");
+
+                setTimeout(() => {
+                    window.location.href = this.get_full_url(this.get_new_node());
+                }, 2000);
+                return false;
+            }
+            return false;
+        }
+        if (this.node_list[this.node_list.length - 1] === this.current_node_id) {
+            aoaostar_log("恭喜你，当前为最后一课");
+            return true;
+        } else if (document.getElementById("videoContent") == null) {
+            aoaostar_log("当前页面没有发现播放信息，准备跳转下一部");
+            setTimeout(() => {
+                window.location.href = this.get_full_url(this.get_new_node());
+            }, 2000);
+            return false;
+        }
+        return true;
+    },
+    //获取当前课程所有id数组
+    get_node_list() {
+        return $.post('/api/course/chapter.json', {
+            courseId: this.course_id,
+            token: get_cookie('token'),
+        }).then(res => {
+            let arr = []
+            for (const chapter of res.result.list) {
+                for (const node of chapter.nodeList) {
+                    node.tabVideo && arr.push(node)
+                }
+            }
+            return arr
+        })
+    },
+    //获取最新未学、未学完的node
+    get_new_node() {
+        for (const node of this.node_list) {
+            if (node.videoState !== 2) {
+                return node
+            }
+        }
+        aoaostar_log("获取最新未学视频失败，跳转第一课");
+        return this.node_list[0];
+    },
+    //获取node list中指定node信息
+    get_list_node(node_id) {
+        console.log(this.node_list)
+        for (const node of this.node_list) {
+            if (node.id !== node_id) {
+                return node
+            }
+        }
+        aoaostar_log("获取最新未学视频失败，跳转最新课");
+        return this.get_new_node();
+    },
+    //获取指定node信息
+    get_node(node_id) {
+        return $.post('/api/node/video.json', {
+            nodeId: node_id,
+            token: get_cookie('token'),
+        }).then(res => {
+            return res.result.data
+        })
+    },
+    //判断是否学完
+    is_over() {
+        return this.node_list[this.node_list.length - 1].id === this.current_node_id;
+    },
+    //拼接完整课程Url
+    get_full_url(node) {
+        return `${window.location.origin}/user/node?courseId=${this.course_id}&nodeId=${node.id}&t=${new Date().getTime()}`
     }
+}
 
-    let aoaostar_player = null;
-
-    let videoIsOver = false;
+function aoaostar_main() {
 
     //video.js 初始化
-    var videoFile = $('#video-file').val() || '';
-    var nodeId = $('#video-nodeId').val() || '';
-    var userId = $('#user-id').val() || '0';
-    var studyState = $('#study-state').val() || 0;
+    const videoFile = $('#video-file').val() || '';
+    const nodeId = $('#video-nodeId').val() || '';
+    const userId = $('#user-id').val() || '0';
+    let studyState = $('#study-state').val() || 0;
     studyState = parseInt(studyState);
 
 
-    var studyUrl = '/user/node/study';
-    var studyId = 0;
-    var totalTime = 0;
-    var studyTime = 0;
-    var playState = 'stop';
-    var playId = 'node_' + userId + '_' + nodeId;
-    var layId = 0;
-
+    const studyUrl = '/user/node/study';
+    let studyId = 0;
+    let totalTime = 0;
+    let studyTime = 0;
+    let playState = 'stop';
+    const playId = 'node_' + userId + '_' + nodeId;
     window.setInterval(function () {
         storage.set('node_play_' + userId, nodeId);
     }, 567);
@@ -320,8 +322,8 @@
 
 
     //记录鼠标行为轨迹,用于分析作弊,已完成的不在记录
-    var loged = (studyState === 2);
-    var sentLog = function () {
+    let loged = (studyState === 2);
+    const sentLog = function () {
         if (loged) {
             return;
         }
@@ -332,102 +334,101 @@
         });
     };
     //处理验证码,防止使用外挂
-    var layIndex = null;
-    var tw = '';
-    var sendTime = function (force, code) {
-            studyTime = totalTime;
-            let data = {nodeId: nodeId, studyId: studyId, studyTime: totalTime};
-            if (code) {
-                if (code.length > 4) {
-                    code = code.substr(0, 4);
-                }
-                data.code = code + tw;
+    let layIndex = null;
+    let tw = '';
+    const sendTime = function (force, code) {
+        studyTime = totalTime;
+        let data = {nodeId: nodeId, studyId: studyId, studyTime: totalTime};
+        if (code) {
+            if (code.length > 4) {
+                code = code.substr(0, 4);
             }
-            if (force !== void 0 && force === 1 && totalTime < 1) {
-                data.studyTime = 1;
-            }
-            $.ajax({
-                method: 'post',
-                url: studyUrl,
-                data,
-                dataType: 'json',
-            }).then(ret => {
-                    if (code) {
-                        if (ret.status) {
-                            aoaostar_log('验证码正确')
-                        } else {
-                            aoaostar_log('验证码错误')
-                        }
-                    }
-                    if (ret.status) {
-                        studyId = ret.studyId;
-                        if (code) {
-                            playState = 'playing';
-                            aoaostar_player.videoPlay();
-                        } else if (ret.msg !== '提交学时成功!') {
-                            aoaostar_log(`提交学时异常，${ret.msg}，2秒后刷新页面`)
-                            setTimeout(() => {
-                                window.location.reload()
-                            }, 2000)
-                        }
-                    }
-                    return ret
-                }
-            ).then(ret => {
-                if (ret.need_code) {
-                    playState = 'pause';
-                    aoaostar_player.videoPause();
-                    if (layIndex === null) {
-                        layIndex = 1;
-                        //处理验证码
-                        aoaostar_log(ret.msg);
-                        aoaostar_log("识别验证码中，请稍后，可能需要多次请求才能成功，稍安勿躁");
-                        fetch('/service/code?r=' + Math.random())
-                            .then(function (response) {
-                                return response.blob()
-                            }).then(blob => {
-                            let formData = new FormData();
-                            formData.append('file', blob)
-                            fetch('https://api.opop.vip/captcha/recognize', {
-                                method: 'post',
-                                body: formData,
-                                mode: 'cors',
-                            }).then(response => response.json())
-                                .then(res => {
-                                    let reader = new FileReader()
-                                    reader.onload = () => {
-                                        console.log(`%c %c 识别结果 %c ${res.data} `,
-                                            `padding: 40px 120px;background-image: url(${reader.result});background-size: contain;background-repeat: no-repeat;color: transparent;`,
-                                            'background: #35495e; padding: 4px; border-radius: 3px 0 0 3px; color: #fff',
-                                            'background: #41b883; padding: 4px; border-radius: 0 3px 3px 0; color: #fff',
-                                        );
-                                        aoaostar_log(`验证码&nbsp;&nbsp;&nbsp;&nbsp;<img class="captcha" src="${reader.result}"/>`)
-                                        aoaostar_log(`识别结果：${res.data}`)
-                                    }
-                                    reader.readAsDataURL(blob)
-                                    tw = '_';
-                                    sendTime(1, res.data);
-                                    layIndex = null;
-                                }).catch(e => {
-                                aoaostar_log(e)
-                            })
-                        })
-                    }
-                }
-
-            })
+            data.code = code + tw;
         }
-    ;
+        if (force !== void 0 && force === 1 && totalTime < 1) {
+            data.studyTime = 1;
+        }
+        $.ajax({
+            method: 'post',
+            url: studyUrl,
+            data,
+            dataType: 'json',
+        }).then(ret => {
+                if (code) {
+                    if (ret.status) {
+                        aoaostar_log('验证码正确')
+                    } else {
+                        aoaostar_log('验证码错误')
+                    }
+                }
+                if (ret.status) {
+                    studyId = ret.studyId;
+                    if (code) {
+                        playState = 'playing';
+                        aoaostar_player.videoPlay();
+                    } else if (ret.msg !== '提交学时成功!') {
+                        aoaostar_log(`提交学时异常，${ret.msg}，2秒后刷新页面`)
+                        setTimeout(() => {
+                            window.location.reload()
+                        }, 2000)
+                    }
+                }
+                return ret
+            }
+        ).then(ret => {
+            if (ret.need_code) {
+                playState = 'pause';
+                aoaostar_player.videoPause();
+                if (layIndex === null) {
+                    layIndex = 1;
+                    //处理验证码
+                    aoaostar_log(ret.msg);
+                    aoaostar_log("识别验证码中，请稍后，可能需要多次请求才能成功，稍安勿躁");
+                    fetch('/service/code?r=' + Math.random())
+                        .then(function (response) {
+                            return response.blob()
+                        }).then(blob => {
+                        let formData = new FormData();
+                        formData.append('file', blob)
+                        fetch('https://api.opop.vip/captcha/recognize', {
+                            method: 'post',
+                            body: formData,
+                            mode: 'cors',
+                        }).then(response => response.json())
+                            .then(res => {
+                                let reader = new FileReader()
+                                reader.onload = () => {
+                                    console.log(`%c %c 识别结果 %c ${res.data} `,
+                                        `padding: 40px 120px;background-image: url(${reader.result});background-size: contain;background-repeat: no-repeat;color: transparent;`,
+                                        'background: #35495e; padding: 4px; border-radius: 3px 0 0 3px; color: #fff',
+                                        'background: #41b883; padding: 4px; border-radius: 0 3px 3px 0; color: #fff',
+                                    );
+                                    aoaostar_log(`验证码&nbsp;&nbsp;&nbsp;&nbsp;<img class="captcha" src="${reader.result}"/>`)
+                                    aoaostar_log(`识别结果：${res.data}`)
+                                }
+                                reader.readAsDataURL(blob)
+                                tw = '_';
+                                sendTime(1, res.data);
+                                layIndex = null;
+                            }).catch(e => {
+                            aoaostar_log(e)
+                        })
+                    })
+                }
+            }
+
+        })
+    };
     window.addEventListener('unload', function (ev) {
-        var form = new FormData();
-        var data = {nodeId: nodeId, studyId: studyId, studyTime: totalTime, closeSend: 1};
-        for (var k in data) {
+        const form = new FormData();
+        const data = {nodeId: nodeId, studyId: studyId, studyTime: totalTime, closeSend: 1};
+        for (const k in data) {
             form.append(k, data[k]);
         }
         window.navigator.sendBeacon(studyUrl, form);
     });
 
-    var interval = 10000;
+    let interval = 10000;
     if (typeof (window.navigator.sendBeacon) == 'function') {
         interval = 30000;
     }
@@ -464,13 +465,12 @@
             storage.set(playId, t);
         }); //监听播放时间
 
-        // aoaostar_player.changeControlBarShow(false);
         if (studyState < 2) {
             aoaostar_player.changeConfig('config', 'timeScheduleAdjust', 1);
         }
 
     };
-    var option = {
+    const option = {
         container: '#videoContent', //容器的ID或className
         variable: 'player', //播放函数名称
         drag: 'start', //拖动的属性
@@ -482,21 +482,17 @@
             [videoFile, 'video/mp4', '中文标清', 0]
         ]
     };
-    var cookieTime = storage.get(playId);
-    if (!cookieTime) {
-        cookieTime = 0;
-    }
-    if (cookieTime > 0) {
-        option['seek'] = cookieTime;
-    }
+    let cookieTime = storage.get(playId);
+    !cookieTime && (cookieTime = 0);
+    cookieTime > 0 && (option['seek'] = cookieTime)
     aoaostar_player = new ckplayer(option);
     //实例化播放器
     try {
         aoaostar.initialize()
         aoaostar.main()
     } catch (e) {
+        console.log(e)
         aoaostar_log(e)
         window.location.href = aoaostar.get_full_url(aoaostar.get_new_node());
     }
-
-})()
+}

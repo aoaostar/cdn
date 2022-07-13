@@ -18,6 +18,10 @@ html {
     --aoaostar-info: #17a2b8;
 }
 
+.aoaostar {
+    display: block !important;
+}
+
 .aoaostar .block {
     display: block !important;
 }
@@ -156,8 +160,9 @@ html {
     overflow: hidden;
     background: var(--aoaostar-white);
 }
-.aoaostar .output li:hover{
-    transform:scale(1.2);
+
+.aoaostar .output li:hover {
+    transform: scale(1.2);
 }
 
 .aoaostar .output li:last-child {
@@ -183,7 +188,8 @@ html {
     border-radius: 0.25rem;
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
-.aoaostar .captcha{
+
+.aoaostar .captcha {
     width: 90px;
     height: 40px;
 }
