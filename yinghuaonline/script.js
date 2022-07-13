@@ -22,8 +22,8 @@
 // @grant  GM_info
 // @grant  GM_log
 // @require https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js
-// @require https://mooc.yinghuaonline.com/ckplayer/ckplayer.js
-// @require https://cdn.aoaostar.com/yinghuaonline/main.min.js?v=2.3
+// @require https://greasyfork.org/scripts/447800/code/ckplayer.js
+// @require https://greasyfork.org/scripts/447799/code/aoaostar-yinghua-main.js
 // @run-at document-idle
 // ==/UserScript==
 
