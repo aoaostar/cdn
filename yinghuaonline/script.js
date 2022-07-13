@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         傲星英华学堂网课助手
 // @namespace    https://yinghuaonline.aoaostar.com
-// @version      2.3
+// @version      2.3.1
 // @description  英华学堂在线网课全自动挂机脚本，支持验证码识别
 // @author       Pluto
 // @icon         https://www.aoaostar.com/favicon.ico
@@ -21,6 +21,7 @@
 // @grant  GM_listValues
 // @grant  GM_info
 // @grant  GM_log
+// @grant  GM_addStyle
 // @require https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js
 // @require https://greasyfork.org/scripts/447800/code/ckplayer.js
 // @require https://greasyfork.org/scripts/447799/code/aoaostar-yinghua-main.js
@@ -29,7 +30,7 @@
 
 (function () {
     $(function () {
-        if (!contain_platform()){
+        if (!contain_platform()) {
             return
         }
         // 去除烦人的第一次登录信息框
@@ -41,7 +42,8 @@
             aoaostar_main()
         }
         if (window.location.pathname.match('/user/login') && GM_getValue('menu_force_login', true)) {
-            $('#loginForm #code_row')?.remove()
+
+            GM_addStyle('#code_row{display:none;}')
             $('#login-title').text('学生登录（已开启封号强登）')
             $('#loginForm > .list > .item:last-child').html(`<div class="inpbox">
                                 <input type="button" class="btn" id="force_login" value="强制登录"/>
