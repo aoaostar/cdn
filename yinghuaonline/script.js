@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         傲星英华学堂网课助手
 // @namespace    https://yinghuaonline.aoaostar.com
-// @version      2.3.1
+// @version      2.3.2
 // @description  英华学堂在线网课全自动挂机脚本，支持验证码识别
 // @author       Pluto
 // @icon         https://www.aoaostar.com/favicon.ico
@@ -34,7 +34,12 @@
             return
         }
         // 去除烦人的第一次登录信息框
-        $('.layui-layer-content').text().includes("您可能是第一次登录系统") && layer.closeAll()
+        const layer_close = setInterval(() => {
+            if ($('.layui-layer-content').text().includes("您可能是第一次登录系统")) {
+                layer.closeAll()
+                clearInterval(layer_close)
+            }
+        }, 500)
 
         if (window.location.pathname.match('/user/node')) {
             //初始化面板
@@ -42,7 +47,6 @@
             aoaostar_main()
         }
         if (window.location.pathname.match('/user/login') && GM_getValue('menu_force_login', true)) {
-
             GM_addStyle('#code_row{display:none;}')
             $('#login-title').text('学生登录（已开启封号强登）')
             $('#loginForm > .list > .item:last-child').html(`<div class="inpbox">
@@ -173,15 +177,31 @@
                 <span>当前章节ID</span><span id="node-id">正在获取</span>
             </div>
         </div>
-        <div class="tag justify-center">
-            <span>课程名称</span><span id="course-title">正在获取</span>
-        </div>
         <div class="flex justify-center">
             <div class="tag">
                 <span>视频总数</span><span id="node-count">正在获取</span>
             </div>
             <div class="tag">
                 <span>视频时长</span><span id="course-duration">正在获取</span>
+            </div>
+        </div>
+        <div class="flex justify-center">
+            <div class="tag">
+                <span>当前第n个视频</span><span id="node-index">正在获取</span>
+            </div>
+            <div class="tag">
+                <span>剩余视频</span><span id="node-surplus">正在获取</span>
+            </div>
+        </div>
+        <div class="tag justify-center">
+            <span>课程名称</span><span id="course-title">正在获取</span>
+        </div>
+        <div class="flex justify-center">
+            <div class="tag">
+                <span>状态</span><span id="node-status">正在获取</span>
+            </div>
+            <div class="tag">
+                <span>进度</span><span id="node-progress">正在获取</span>
             </div>
         </div>
     </div>

@@ -14,12 +14,14 @@ function aoaostar_dump() {
         console.log(...arguments);
     }
 }
+
 function notification(message) {
     GM_notification({
         text: message,
         timeout: 4000,
     })
 }
+
 function aoaostar_log() {
     for (const argument of arguments) {
         if ($('.output :last-child .inline-block').text() === argument.toString()) {
@@ -113,14 +115,22 @@ const aoaostar = {
     initialize() {
         this.player = aoaostar_player
         this.current_node_id = parseInt(get_query_variable('nodeId'))
-        console.log(this)
         this.course_id = this.get_course_id()
         this.get_node_list().then(res => {
             this.node_list = res
             //视频总数显示
             $('#node-count').text(this.node_list.length)
+            //当前第n个视频
+            let indexOf = this.node_list.indexOf(this.get_list_node(this.current_node_id));
+            $('#node-index').text(indexOf + 1)
+            //剩余视频
+            $('#node-surplus').text(this.node_list.length - indexOf - 1)
         })
         this.get_node(this.current_node_id).then(current_node => {
+            // 播放超时五分钟刷新页面，防止卡住
+            setTimeout(() => {
+                location.reload()
+            }, (current_node.videoDuration + 5 * 60) * 1000)
             const interval = setInterval(() => {
                 if (this.player.time >= parseInt(current_node.study_total.duration)) {
                     clearInterval(interval)
@@ -128,6 +138,25 @@ const aoaostar = {
                 this.player.videoSeek(current_node.study_total.duration);
             }, 1500)
         })
+        // 更新播放进度
+        setInterval(() => {
+            this.get_node(this.current_node_id).then(current_node => {
+                let status = ''
+                switch (current_node.study_total.state) {
+                    case '1':
+                        status = '未学完';
+                        break;
+                    case '2':
+                        status = '已学完';
+                        videoIsOver = true
+                        break;
+                    default:
+                        status = '未学';
+                }
+                $('#node-status').text(status)
+                $('#node-progress').text((current_node.study_total.progress * 100).toFixed(2) + '%')
+            })
+        }, 3000)
         $('#course-id').text(this.course_id)
         $('#node-id').text(this.current_node_id)
         $('#course-title').text($('.detmain-navlist .group .list .item a.on').text())
@@ -152,11 +181,8 @@ const aoaostar = {
         aoaostar_log("脚本加载完成 当前时间：" + new Date().toLocaleString());
     },
     main() {
-        if (!this.judgement_state()) {
-            return
-        }
-        if (document.getElementById("videoContent") == null && this.is_over()) {
-            aoaostar_log("恭喜你，已全部刷完");
+        if (this.node_list[this.node_list.length - 1] === this.current_node_id) {
+            aoaostar_log("恭喜你，当前为最后一课");
         }
         this.main_interval = setInterval(() => {
             aoaostar_log("播放状态检查，是否播放完成：" + videoIsOver);
@@ -189,7 +215,7 @@ const aoaostar = {
         aoaostar_log("视频长度为" + duration + "秒");
         if (this.is_over()) {
             aoaostar_log("恭喜你，已全部刷完");
-            notification("恭喜你，已全部刷完")
+            notification("恭喜你，已全部刷完");
             clearInterval(this.main_interval);
             try {
                 let reminder = document.createElement('audio');
@@ -206,39 +232,6 @@ const aoaostar = {
         }
     },
 
-
-    //获取当前状态，判断是否为播放页
-    judgement_state() {
-        if (document.getElementById("error-main") != null) {
-            if (document.querySelector("#error-main .name").innerText === "章节数据有误,联系老师!") {
-                aoaostar_log("章节数据有误,准备跳转下一部");
-                setTimeout(() => {
-                    window.location.href = this.get_full_url(this.get_new_node());
-                }, 2000);
-                return false;
-            }
-            if (document.querySelector("#error-main .name").innerText === "当前章节尚未解锁，请先学完上一个视频") {
-                aoaostar_log("当前章节尚未解锁，准备跳转上一部");
-
-                setTimeout(() => {
-                    window.location.href = this.get_full_url(this.get_new_node());
-                }, 2000);
-                return false;
-            }
-            return false;
-        }
-        if (this.node_list[this.node_list.length - 1] === this.current_node_id) {
-            aoaostar_log("恭喜你，当前为最后一课");
-            return true;
-        } else if (document.getElementById("videoContent") == null) {
-            aoaostar_log("当前页面没有发现播放信息，准备跳转下一部");
-            setTimeout(() => {
-                window.location.href = this.get_full_url(this.get_new_node());
-            }, 2000);
-            return false;
-        }
-        return true;
-    },
     //获取当前课程所有id数组
     get_node_list() {
         return $.post('/api/course/chapter.json', {
@@ -266,9 +259,8 @@ const aoaostar = {
     },
     //获取node list中指定node信息
     get_list_node(node_id) {
-        console.log(this.node_list)
         for (const node of this.node_list) {
-            if (node.id !== node_id) {
+            if (node.id === node_id) {
                 return node
             }
         }
