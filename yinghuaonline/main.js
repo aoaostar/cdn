@@ -90,6 +90,7 @@ const aoaostar = {
             $('#node-surplus').text(this.node_list.length - indexOf - 1)
         })
         this.get_node(this.current_node_id).then(current_node => {
+            $('#course-duration').text(current_node.videoDuration + "秒")
             // 播放超时五分钟刷新页面，防止卡住
             setTimeout(() => {
                 location.reload()
@@ -105,7 +106,7 @@ const aoaostar = {
         setInterval(() => {
             this.get_node(this.current_node_id).then(current_node => {
                 let status = ''
-                switch (current_node.study_total.state) {
+                switch (current_node.study_total?.state) {
                     case '1':
                         status = '未学完';
                         break;
@@ -117,15 +118,12 @@ const aoaostar = {
                         status = '未学';
                 }
                 $('#node-status').text(status)
-                $('#node-progress').text((current_node.study_total.progress * 100).toFixed(2) + '%')
+                $('#node-progress').text(((current_node.study_total.progress || 0) * 100).toFixed(2) + '%')
             })
         }, 3000)
         $('#course-id').text(this.course_id)
         $('#node-id').text(this.current_node_id)
         $('#course-title').text($('.detmain-navlist .group .list .item a.on').text())
-        const interval = setInterval(() => {
-            this.player.getMetaDate()?.duration && $('#course-duration').text(this.player.getMetaDate()?.duration + "秒") && clearInterval(interval)
-        }, 1000)
 
         if (window.console && window.console.log) {
             console.clear();
@@ -174,8 +172,6 @@ const aoaostar = {
     },
     over() {
         aoaostar_log("播放完成");
-        let duration = this.player.getMetaDate().duration;
-        aoaostar_log("视频长度为" + duration + "秒");
         if (this.is_over()) {
             aoaostar_log("恭喜你，已全部刷完");
             notification("恭喜你，已全部刷完");
@@ -276,7 +272,7 @@ function aoaostar_main() {
     };
     //处理验证码,防止使用外挂
     let layIndex = null;
-    let tw = '';
+    let tw = '_';
     const sendTime = function (force, code) {
         studyTime = totalTime;
         let data = {nodeId: nodeId, studyId: studyId, studyTime: totalTime};
@@ -319,7 +315,7 @@ function aoaostar_main() {
                     //处理验证码
                     aoaostar_log(ret.msg);
                     aoaostar_log("识别验证码中，请稍后，可能需要多次请求才能成功，稍安勿躁");
-                    fetch('/service/code?r=' + Math.random())
+                    fetch('/service/code/aa?r=' + Math.random())
                         .then(function (response) {
                             return response.blob()
                         }).then(blob => {
@@ -342,7 +338,6 @@ function aoaostar_main() {
                                     aoaostar_log(`识别结果：${res.data}`)
                                 }
                                 reader.readAsDataURL(blob)
-                                tw = '_';
                                 sendTime(1, res.data);
                                 layIndex = null;
                             }).catch(e => {
