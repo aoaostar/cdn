@@ -363,7 +363,8 @@ function aoaostar_main() {
             return;
         }
         sendTime();
-    }, typeof (window.navigator.sendBeacon) == 'function' ? 30000 : 10000);
+        // }, typeof (window.navigator.sendBeacon) == 'function' ? 30000 : 10000);
+    }, 10000);
     window.loadHandler = function () {
         if (studyId === 0) {
             sendTime(1);
