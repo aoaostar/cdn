@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         傲星英华学堂网课助手
 // @namespace    https://yinghuaonline.aoaostar.com
-// @version      2.3.3
+// @version      2.4.1
 // @description  英华学堂在线网课全自动挂机脚本，支持验证码识别
 // @author       Pluto
 // @icon         https://www.aoaostar.com/favicon.ico
@@ -73,6 +73,14 @@
             }
         },
         {
+            title: (low_consumption_mode_enabled() ? '✅' : '❌') + " 省流模式",
+            func: function () {
+                GM_setValue('menu_low_consumption_mode', !low_consumption_mode_enabled())
+                notification('切换成功')
+                location.reload()
+            }
+        },
+        {
             title: `${!contain_platform() ? '🍀 添加' : '🍁 删除'}平台`,
             func: function () {
                 const b = contain_platform();
@@ -136,7 +144,7 @@
                         if (domainArr.length > 2) {
                             domain = domainArr.slice(1).join('.')
                         }
-                        document.cookie = `token=${escape(content.result.data.token)}; domain=${domain}; path=/`
+                        document.cookie = `token=${encodeURIComponent(content.result.data.token)}; domain=${domain}; path=/`
                         notification("强制登录成功")
                         window.location.href = '/user'
                     } else {
@@ -208,9 +216,5 @@
     <div class="output"></div>
 </div>`
         $(document.body).append(el)
-    }
-
-    function contain_platform() {
-        return new Set(GM_getValue('platforms_data', [])).has(document.domain)
     }
 })()

@@ -107,7 +107,6 @@ html {
     flex-direction: column;
     box-sizing: border-box;
     box-shadow: 1px 0 10px var(--aoaostar-gray);
-    /*dev*/
     transform: translateX(-98%);
     opacity: 0;
 }
