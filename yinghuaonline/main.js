@@ -1,8 +1,8 @@
 /*
 * You may think you know what the following code does.
 * But you dont. Trust me.
-* Fiddle with it, and youll spend many a sleepless
-* night cursing the moment you thought youd be clever
+* Fiddle with it, and you'll spend many a sleepless
+* night cursing the moment you thought you'd be clever
 * enough to "optimize" the code below.
 * Now close this file and go play with something else.
 *
@@ -38,10 +38,10 @@ function aoaostar_log() {
             $('.aoaostar .output :last-child .count').removeClass('hidden')
         } else {
             $('.aoaostar .output').append(`<li><div class="inline-block">${argument}</div><span class="count hidden"></span></li>`)
-            const newLog = (sessionStorage.getItem('aoaostar_log') || '') + `[${new Date().toLocaleString()}] ${argument}\n`;
-            sessionStorage.setItem('aoaostar_log', newLog)
-            $('.aoaostar .log').html(newLog)
         }
+        const newLog = (sessionStorage.getItem('aoaostar_log') || '') + `[${new Date().toLocaleString()}] ${argument}\n`;
+        sessionStorage.setItem('aoaostar_log', newLog)
+        $('.aoaostar .log').html(newLog)
     }
     $('.aoaostar .output').scrollTop($('.aoaostar .output')[0]?.scrollHeight);
     $('.aoaostar .log').scrollTop($('.aoaostar .log')[0]?.scrollHeight);
@@ -52,8 +52,8 @@ function get_query_variable(variable, url = null) {
     let query = window.location.search.substring(1);
 
     if (url != null) {
-        url.substr(url.indexOf("?") + 1);
-        query = url.substr(url.indexOf("?") + 1);
+        url.substring(url.indexOf("?") + 1);
+        query = url.substring(url.indexOf("?") + 1);
     }
     const vars = query.split("&");
     for (let i = 0; i < vars.length; i++) {
@@ -119,7 +119,7 @@ class Aoaostar {
         // 更新播放进度
         setInterval(() => {
             this.get_node(this.current_node_id).then(current_node => {
-                let status = ''
+                let status
                 switch (current_node?.study_total?.state) {
                     case '1':
                         status = '未学完';
@@ -170,7 +170,7 @@ class Aoaostar {
         let totalTime = 0;
         let studyTime = 0;
         let playState = 'playing';
-        window.setInterval(function () {
+        window.setInterval(() => {
             if (playState === 'playing') {
                 totalTime++;
             }
@@ -188,7 +188,7 @@ class Aoaostar {
         //处理验证码,防止使用外挂
         let layIndex = null;
         let tw = '_';
-        const sendTime = function (force, code) {
+        const sendTime = (force, code) => {
             studyTime = totalTime;
             let data = {nodeId: nodeId, studyId: studyId, studyTime: totalTime};
             if (code) {
@@ -217,6 +217,8 @@ class Aoaostar {
                             setTimeout(() => {
                                 window.location.reload()
                             }, 2000)
+                        }else{
+                            aoaostar_log(`提交学时成功`)
                         }
                     }
                     return ret
@@ -264,7 +266,7 @@ class Aoaostar {
 
             })
         };
-        window.addEventListener('unload', function (ev) {
+        window.addEventListener('unload', (ev) => {
             const form = new FormData();
             const data = {nodeId: nodeId, studyId: studyId, studyTime: totalTime, close: 1};
             for (const k in data) {
@@ -273,7 +275,7 @@ class Aoaostar {
             window.navigator.sendBeacon(studyUrl, form);
         });
         //提交学习时间
-        window.setInterval(function () {
+        window.setInterval(() => {
             if (this.player == null || totalTime <= studyTime) {
                 return;
             }
