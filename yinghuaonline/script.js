@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         傲星英华学堂网课助手
 // @namespace    https://yinghuaonline.aoaostar.com
-// @version      2.4.1
+// @version      2.4.2
 // @description  英华学堂在线网课全自动挂机脚本，支持验证码识别
 // @author       Pluto
 // @icon         https://www.aoaostar.com/favicon.ico
@@ -213,8 +213,25 @@
             </div>
         </div>
     </div>
-    <div class="output"></div>
+    <div class="tab">
+          <div class="title">
+            <div class="active" data-tab="output">当前日志</div>
+            <div data-tab="log">脚本日志</div>
+        </div>
+        <div class="content">
+            <div class="output"></div>
+            <div class="log hidden"></div>
+        </div>
+    </div>
 </div>`
         $(document.body).append(el)
+
+        $('.aoaostar .tab .title>div').click(e => {
+            $('.aoaostar .tab .title>div').removeClass('active')
+            const tab = $(e.target).data('tab');
+            $(e.target).addClass('active')
+            $('.tab .content > div').addClass('hidden')
+            $('.tab .content .' + tab).removeClass('hidden')
+        })
     }
 })()

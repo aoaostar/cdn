@@ -127,6 +127,7 @@ html {
 .aoaostar .info {
     padding-bottom: 2rem;
     box-shadow: 0 2px 2px -2px var(--aoaostar-gray);
+    margin-bottom: .2rem;
 }
 
 .aoaostar .info .title {
@@ -139,14 +140,49 @@ html {
     margin-bottom: 1rem;
 }
 
-.aoaostar .output {
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding: 2rem 2rem 2rem;
-    text-align: center;
+.aoaostar .captcha {
+    width: 90px;
+    height: 40px;
 }
 
-.aoaostar .output li {
+.aoaostar .tab{
+    flex: 1;
+    flex-shrink: 0;
+    height: 0;
+}
+.aoaostar .tab .title{
+    display: flex;
+    justify-content: center;
+    margin: .5rem 0;
+}
+.aoaostar .tab .title > div{
+    padding: 1rem;
+    color: var(--aoaostar-green);
+    text-align: center;
+    cursor: pointer;
+    border-bottom: transparent solid 2px;
+}
+.aoaostar .tab .title > div:hover{
+    background-color: rgba(0,0,0,.05);
+    border-bottom: var(--aoaostar-green) solid 2px;
+}
+.aoaostar .tab .title > div.active{
+    border-bottom: var(--aoaostar-green) solid 2px;
+}
+
+.aoaostar .tab .content{
+    height: 100%;
+}
+
+.aoaostar .tab .output {
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-align: center;
+    height: 100%;
+    padding: 0 1rem;
+}
+
+.aoaostar .tab .output li {
     list-style: none;
     padding: .5rem;
     box-shadow: inset 0 -1px 1px -1px var(--aoaostar-black);
@@ -156,19 +192,19 @@ html {
     background: var(--aoaostar-white);
 }
 
-.aoaostar .output li:hover {
+.aoaostar .tab .output li:hover {
     transform: scale(1.2);
 }
 
-.aoaostar .output li:last-child {
+.aoaostar .tab .output li:last-child {
     box-shadow: none;
 }
 
-.aoaostar .output li .inline-block {
+.aoaostar .tab .output li .inline-block {
     word-break: break-all;
 }
 
-.aoaostar .output li .count {
+.aoaostar .tab .output li .count {
     display: inline-block;
     margin-left: 1rem;
     color: var(--aoaostar-white);
@@ -183,9 +219,10 @@ html {
     border-radius: 0.25rem;
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
-
-.aoaostar .captcha {
-    width: 90px;
-    height: 40px;
+.aoaostar .tab .content .log{
+    padding: 0 1rem;
+    white-space: pre-wrap;
+    line-height: 1.5rem;
+    overflow-y: auto;
+    height: 100%;
 }
-
