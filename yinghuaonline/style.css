@@ -94,7 +94,7 @@ html {
 
 .aoaostar {
     margin: 0;
-    padding: 1rem 0;
+    padding-top: 1rem;
     width: 400px;
     height: 100vh;
     background-color: var(--aoaostar-white);
@@ -145,33 +145,40 @@ html {
     height: 40px;
 }
 
-.aoaostar .tab{
+.aoaostar .tab {
     flex: 1;
     flex-shrink: 0;
     height: 0;
+    display: flex;
+    flex-direction: column;
 }
-.aoaostar .tab .title{
+
+.aoaostar .tab .title {
     display: flex;
     justify-content: center;
     margin: .5rem 0;
 }
-.aoaostar .tab .title > div{
+
+.aoaostar .tab .title > div {
     padding: 1rem;
     color: var(--aoaostar-green);
     text-align: center;
     cursor: pointer;
     border-bottom: transparent solid 2px;
 }
-.aoaostar .tab .title > div:hover{
-    background-color: rgba(0,0,0,.05);
-    border-bottom: var(--aoaostar-green) solid 2px;
-}
-.aoaostar .tab .title > div.active{
+
+.aoaostar .tab .title > div:hover {
+    background-color: rgba(0, 0, 0, .05);
     border-bottom: var(--aoaostar-green) solid 2px;
 }
 
-.aoaostar .tab .content{
-    height: 100%;
+.aoaostar .tab .title > div.active {
+    border-bottom: var(--aoaostar-green) solid 2px;
+}
+
+.aoaostar .tab .content {
+    height: 0;
+    flex: 1;
 }
 
 .aoaostar .tab .output {
@@ -219,7 +226,8 @@ html {
     border-radius: 0.25rem;
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
-.aoaostar .tab .content .log{
+
+.aoaostar .tab .content .log {
     padding: 0 1rem;
     white-space: pre-wrap;
     line-height: 1.5rem;
