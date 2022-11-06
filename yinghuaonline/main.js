@@ -139,7 +139,7 @@ class Aoaostar {
         $('#node-id').text(this.current_node_id)
         $('#course-title').text($('.detmain-navlist .group .list .item a.on').text())
 
-        this.initplayer()
+        this.init_player()
         this.main()
         if (window.console && window.console.log) {
             console.clear();
@@ -159,7 +159,7 @@ class Aoaostar {
 
     }
 
-    initplayer() {
+    init_player() {
 
         //video.js 初始化
         const videoFile = $('#video-file').val() || '';
