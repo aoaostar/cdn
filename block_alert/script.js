@@ -4,8 +4,7 @@
 // @version      0.1
 // @description  某些网站会弹出alert弹窗很烦人，可以直接拦截输出到控制台
 // @author       Pluto
-// @license      GPL3.0
-// @match        *://*
+// @match        */*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=www.aoaostar.com
 // @grant        unsafeWindow
 // @grant        GM_getValue
