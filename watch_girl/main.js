@@ -6,6 +6,7 @@
 // @author       Pluto
 // @match        https://javdb.com/actors/*
 // @match        https://javdb.com/v/*
+// @match        https://javdb.com/tags*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=javdb.com
 // @grant        GM_xmlhttpRequest
 // @grant        GM_openInTab
