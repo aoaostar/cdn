@@ -7,6 +7,9 @@
 // @match        https://javdb.com/actors/*
 // @match        https://javdb.com/v/*
 // @match        https://javdb.com/tags*
+// @match        https://javdb.com/series*
+// @match        https://javdb.com/makers/*
+// @match        https://javdb.com/rankings/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=javdb.com
 // @grant        GM_xmlhttpRequest
 // @grant        GM_openInTab
@@ -134,8 +137,9 @@ function add_list_task() {
     }, "list")
 }
 
-function add_detail_task() {
-    let url = new URL(window.location.href);
+function add_detail_task(e) {
+
+    let url = new URL($(e.target).data('url'));
     let t = url.searchParams.get("t");
     if (t && !t.split(',').includes('d')) {
         $message.warn("有且仅含磁力的页面方可提交")
@@ -167,10 +171,10 @@ $('.section-addition > div').addClass('has-addons').append(`<p id="add_list_task
             <span>提交到看板(片)娘</span>
 </button>        </p>`)
 
-
+// 详情页面
 $('.movie-panel-info > .review-buttons').append(`
 <div class="panel-block">
-<button class="button is-link add_detail_task" title="提交到看板(片)娘">
+<button data-url="${window.location.href}" class="button is-link add_detail_task" title="提交到看板(片)娘">
             <span class="icon is-small">
               <i class="icon-heart-o"></i>
             </span>
@@ -178,13 +182,18 @@ $('.movie-panel-info > .review-buttons').append(`
 </button>
 </div>`)
 // tags
-$('.movie-list .item').append(`
-<button class="button is-link add_detail_task" style="width: 100%;" title="提交到看板(片)娘">
+let $movie = $('.movie-list .item');
+for (const movieElement of $movie) {
+    let $movieElement = $(movieElement)
+    let s = window.location.origin + $movieElement.children('a').attr('href');
+    $movieElement.append(`
+<button data-url="${s}" class="button is-link add_detail_task" style="width: 100%;" title="提交到看板(片)娘">
             <span class="icon is-small">
               <i class="icon-heart-o"></i>
             </span>
             <span>提交到看板(片)娘</span>
 </button>`)
+}
 
 $('#magnets-content > .item >.buttons').append(`
 <div class="panel-block">
