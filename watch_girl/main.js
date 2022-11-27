@@ -169,13 +169,21 @@ $('.section-addition > div').addClass('has-addons').append(`<p id="add_list_task
 
 $('.movie-panel-info > .review-buttons').append(`
 <div class="panel-block">
-<button id="add_detail_task"  class="button is-link" title="提交到看板(片)娘">
+<button class="button is-link add_detail_task" title="提交到看板(片)娘">
             <span class="icon is-small">
               <i class="icon-heart-o"></i>
             </span>
             <span>提交到看板(片)娘</span>
 </button>
 </div>`)
+// tags
+$('.movie-list .item').append(`
+<button class="button is-link add_detail_task" style="width: 100%;" title="提交到看板(片)娘">
+            <span class="icon is-small">
+              <i class="icon-heart-o"></i>
+            </span>
+            <span>提交到看板(片)娘</span>
+</button>`)
 
 $('#magnets-content > .item >.buttons').append(`
 <div class="panel-block">
@@ -189,7 +197,7 @@ $('#magnets-content > .item >.buttons').append(`
 
 
 $('#add_list_task').click(add_list_task)
-$('#add_detail_task').click(add_detail_task)
+$('.add_detail_task').click(add_detail_task)
 $('.add_aria2_task').click(e => {
     const magnet = $(e.target).parents('#magnets-content > .item').children('.magnet-name').children('a')
 
